@@ -1,0 +1,22 @@
+{
+  "name": "node-js-2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KhaledSaleh25/Node-Js-2.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KhaledSaleh25/Node-Js-2/issues"
+  },
+  "homepage": "https://github.com/KhaledSaleh25/Node-Js-2#readme",
+  "dependencies": {
+    "dotenv": "^17.2.1"
+  }
+}
