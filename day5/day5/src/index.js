@@ -66,3 +66,35 @@ function calculator(){
     }
      askOperation();
 }
+
+
+function guessingGame() {
+    const randomNumber = Math.randomTo50();
+    let attempts = 5;
+
+    function askGuess() {
+        rl.question(`Guess a number between 0 and 50 (Attempts left: ${attempts}): `, (guess) => {
+            const parsedGuess = parseInt(guess, 10);
+            if (isNaN(parsedGuess) || parsedGuess < 0 || parsedGuess > 50) {
+                console.log("Invalid input. Please enter a number between 0 and 50.");
+                askGuess();
+                return;
+            }
+
+            if (parsedGuess === randomNumber) {
+                console.log("You won the game!! Congrats 🥳🥳");
+                rl.close();
+            } else {
+                attempts--;
+                if (attempts > 0) {
+                    console.log("Try again 🤔");
+                    askGuess();
+                } else {
+                    console.log("You lost the game!! Try again 🤔");
+                    rl.close();
+                }
+            }
+        });
+    }
+    askGuess();
+}
