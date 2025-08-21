@@ -38,5 +38,79 @@
 // console.log the following message: [ERR] <error message>
 
 // Export nothing; requiring this file attaches listeners
+const eventBus = require('./eventBus');
+const store = require('./store');
+
+eventBus.on('order:created', (order) => {
+    console.log(`[EVT] order:created #${order.id} for ${order.customer} (${order.item} x${order.qty})`);
+});
+
+eventBus.on('order:paid', (id) => {
+    const order = store.findById(id);
+    if (!order) {
+        eventBus.emit('error', "Order not found");
+        return;
+    }
+    if (order.status === 'shipped' || order.status === 'canceled') {
+        eventBus.emit('error', "Invalid transition to paid");
+        return;
+    }
+    store.setStatus(id, 'paid');
+    console.log(`[EVT] order:paid #${id}`);
+    eventBus.emit('order:statusChanged', id, 'paid');
+});
+
+eventBus.on('order:packed', (id) => {
+    const order = store.findById(id);
+    if (!order) {
+        eventBus.emit('error', "Order not found");
+        return;
+    }
+    if (order.status !== 'paid') {
+        eventBus.emit('error', "Pack requires status=paid");
+        return;
+    }
+    store.setStatus(id, 'packed');
+    console.log(`[EVT] order:packed #${id}`);
+    eventBus.emit('order:statusChanged', id, 'packed');
+});
+
+eventBus.on('order:shipped', (id) => {
+    const order = store.findById(id);
+    if (!order) {
+        eventBus.emit('error', "Order not found");
+        return;
+    }
+    if (order.status !== 'packed') {
+        eventBus.emit('error', "Ship requires status=packed");
+        return;
+    }
+    store.setStatus(id, 'shipped');
+    console.log(`[EVT] order:shipped #${id}`);
+    eventBus.emit('order:statusChanged', id, 'shipped');
+});
+
+eventBus.on('order:canceled', (id) => {
+    const order = store.findById(id);
+    if (!order) {
+        eventBus.emit('error', "Order not found");
+        return;
+    }
+    if (order.status === 'shipped') {
+        eventBus.emit('error', "Cannot cancel shipped order");
+        return;
+    }
+    store.setStatus(id, 'canceled');
+    console.log(`[EVT] order:canceled #${id} ❌`);
+    eventBus.emit('order:statusChanged', id, 'canceled');
+});
+
+eventBus.on('order:statusChanged', (id, status) => {
+    console.log(`[EVT] statusChanged  #${id} → ${status}`);
+});
+
+eventBus.on('error', (message) => {
+    console.log(`[ERR] ${message}`);
+});
 
 module.exports = {};
